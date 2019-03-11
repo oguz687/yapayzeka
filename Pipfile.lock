@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "34f24cc999ae77f3e140b28938e715891d40e9ee0d23dd821158e3451e55dbb4"
+            "sha256": "42e8c088bd9e6d623ba57003380f34af8cacb467eb4a7381568e7c37e367551a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -505,6 +505,10 @@
             ],
             "index": "pypi",
             "version": "==1.24.1"
+        },
+        "yapayzeka": {
+            "editable": true,
+            "path": "."
         },
         "zipp": {
             "hashes": [

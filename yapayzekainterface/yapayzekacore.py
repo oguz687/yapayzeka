@@ -1,38 +1,26 @@
 import os
+import time
 import timeit
+import warnings
 from pathlib import Path
-import pkg_resources
+
 import joblib
 import numpy as np
 import pandas as pd
-import time
-# from matplotlib.colors import ListedColormap
-# from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-# from scipy.sparse import csr_matrix,csc_matrix
-# from sklearn.linear_model import LassoLarscd
-# from sklearn.neighbors import RadiusNeighborsClassifier
-# from sklearn.neighbors import KNeighborsClassifier
+import pkg_resources
 from TurkishStemmer import TurkishStemmer as tust
-# from sklearn import preprocessing
-# from sklearn.multiclass import OneVsRestClassifier
-# from sklearn.multiclass import OneVsOneClassifier
 from joblib import Parallel, delayed
-# from sklearn.linear_model import SGDClassifier
-# from sklearn.feature_selection import f_classif
 from sklearn import svm
-from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
+with warnings.catch_warnings(record=True) as w:
+    warnings.simplefilter("always")
+    from sklearn.feature_extraction.text import HashingVectorizer
+warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
-
-# from joblib import dump, load
-# from sklearn.naive_bayes import GaussianNB
-# from sklearn.neural_network import MLPClassifier
-# from sklearn.preprocessing import FunctionTransformer
-# from mlxtend.preprocessing import DenseTransformer
-# from sklearn import tree
 class Yapayzeka():
 
     def veritabanigetir(self):
@@ -43,72 +31,75 @@ class Yapayzeka():
         #     print(i)
 
         yasam = DATABASE.find({"$and": [
-            {"target": {"$nin": ["turkiye", "dunya", "gundem","magazin","spor","cevre","medya","egitim", "ekonomi",
-                                "bilim-teknoloji",
-                                "kultur-sanat",
-                                "saglik"]}},
+            {"target": {"$nin": ["turkiye", "dunya", "gundem", "magazin", "spor", "cevre", "medya", "egitim", "ekonomi",
+                                 "bilim-teknoloji",
+                                 "kultur-sanat",
+                                 "saglik"]}},
             {"data": {"$gt": []}},
             {"target": {"$in": ["yasam"],
                         }},
 
         ]}, {"_id": 0, "url": 0})
         ekonomi = DATABASE.find({"$and": [
-            {"target": {"$nin": ["turkiye", "dunya", "gundem", "magazin", "spor", "cevre", "medya", "egitim","bilim-teknoloji",
-                                "kultur-sanat",
-                                "saglik","yasam",]}},
+            {"target": {
+                "$nin": ["turkiye", "dunya", "gundem", "magazin", "spor", "cevre", "medya", "egitim", "bilim-teknoloji",
+                         "kultur-sanat",
+                         "saglik", "yasam", ]}},
             {"data": {"$gt": []}},
-            {"target": {"$in": [ "ekonomi",
+            {"target": {"$in": ["ekonomi",
                                 ],
                         }},
 
         ]}, {"_id": 0, "url": 0})
         bilim = DATABASE.find({"$and": [
-            {"target": {"$nin": ["turkiye", "dunya", "gundem", "magazin", "spor", "cevre", "medya", "egitim","kultur-sanat",
-                                "saglik","yasam", "ekonomi",]}},
+            {"target": {
+                "$nin": ["turkiye", "dunya", "gundem", "magazin", "spor", "cevre", "medya", "egitim", "kultur-sanat",
+                         "saglik", "yasam", "ekonomi", ]}},
             {"data": {"$gt": []}},
             {"target": {"$in": [
-                                "bilim-teknoloji",
-                                ],
-                        }},
+                "bilim-teknoloji",
+            ],
+            }},
 
         ]}, {"_id": 0, "url": 0})
         kultur = DATABASE.find({"$and": [
-            {"target": {"$nin": ["turkiye", "dunya", "gundem", "magazin", "spor", "cevre", "medya", "egitim","saglik","yasam", "ekonomi",
-                                "bilim-teknoloji",]}},
+            {"target": {
+                "$nin": ["turkiye", "dunya", "gundem", "magazin", "spor", "cevre", "medya", "egitim", "saglik", "yasam",
+                         "ekonomi",
+                         "bilim-teknoloji", ]}},
             {"data": {"$gt": []}},
             {"target": {"$in": [
-                                "kultur-sanat",
-                                ],
-                        }},
+                "kultur-sanat",
+            ],
+            }},
 
         ]}, {"_id": 0, "url": 0})
         saglik = DATABASE.find({"$and": [
-            {"target": {"$nin": ["turkiye", "dunya", "gundem", "magazin", "spor", "cevre", "medya", "egitim","yasam", "ekonomi",
-                                "bilim-teknoloji",
-                                "kultur-sanat",]}},
+            {"target": {"$nin": ["turkiye", "dunya", "gundem", "magazin", "spor", "cevre", "medya", "egitim", "yasam",
+                                 "ekonomi",
+                                 "bilim-teknoloji",
+                                 "kultur-sanat", ]}},
             {"data": {"$gt": []}},
             {"target": {"$in": [
-                                "saglik"],
-                        }},
+                "saglik"],
+            }},
 
         ]}, {"_id": 0, "url": 0})
-
-
 
         # print(type(coll),coll.count())
         # coll = DATABASE.find({"target":{"$nin":["turkiye","dunya","gundem"]}}, {"_id": 0, "url": 0})
 
-        return yasam,kultur,bilim,ekonomi,saglik
+        return yasam, kultur, bilim, ekonomi, saglik
 
     def split_model(self):
         # df = pd.DataFrame(list(self.veritabanigetir()))
         # print(df)
-        lf=list()
-        yasam,_,_,_,_=self.veritabanigetir()
-        _,kultur,_,_,_=self.veritabanigetir()
-        _,_,bilim,_,_=self.veritabanigetir()
-        _,_,_,ekonomi,_=self.veritabanigetir()
-        _,_,_,_,saglik=self.veritabanigetir()
+        lf = list()
+        yasam, _, _, _, _ = self.veritabanigetir()
+        _, kultur, _, _, _ = self.veritabanigetir()
+        _, _, bilim, _, _ = self.veritabanigetir()
+        _, _, _, ekonomi, _ = self.veritabanigetir()
+        _, _, _, _, saglik = self.veritabanigetir()
         lf.extend(yasam)
         lf.extend(kultur)
         lf.extend(bilim)
@@ -119,7 +110,7 @@ class Yapayzeka():
         data = df['data'] = [" ".join(data) for data in df['data'].values]
         df["target"] = [" ".join(target) for target in df['target'].values]
         target = np.array(df["target"])
-        X_train,X_test, y_train, y_test = train_test_split(data, target, test_size=0.21, random_state=46)
+        X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.21, random_state=46)
         return X_train, X_test, y_train, y_test
 
     def plot_model(self):
@@ -133,11 +124,11 @@ class Yapayzeka():
             stem = ps.stem(i)
             stemmed.append(stem)
         X_train = stemmed
+
         pipeline = Pipeline(steps=[
             # ("Count",CountVectorizer()),
             ('tfidf', HashingVectorizer()),
-            ('clf', svm.LinearSVC(verbose=3,),)])
-
+            ('clf', svm.LinearSVC(verbose=3, ),)])
 
         predicted = pipeline.fit(X_train, y_train)
         pcdump = joblib.dump(predicted, "svchash3.pkl")
@@ -147,8 +138,8 @@ class Yapayzeka():
         Parallel(n_jobs=3, verbose=1)(delayed(self.test_model()))
 
     def predict_from_model(self, args):
-        docs_new3 = []
-        docs_new3.append(args)
+        docs_new3 = [args]
+        # docs_new3.append(args)
         docs_new = ['beslenme c vitamininin önemi', 'tarım ve köy işleri başkanlığı altın faiz',
                     "Münbiç şehir merkezinde bugün (16 Ocak) vuku bulan bombalı saldırıda ABD askeri personeli ve sivil can kaybı meydana geldiği üzüntüyle öğrenilmiştir. Bu menfur terör eylemini şiddetle kınıyoruz. ",
                     "Hazine ve Maliye Bakanı Berat Albayrak'ın imzasıyla yayımlanan genelge ile kamu idarelerinin kiraladığı taşınmazlarının kira artış oranlarının belirlenmesinde ve yeni yapacağı taşınmaz kiralamalarında uyacağı esaslar yer aldı. Genelgeye göre; kamu idarelerinin kiraladığı taşınmazların kira artışları, artışın yapılacağı ayda yayımlanan Tüketici Fiyatları Endeksi'nin(TÜFE) 12 aylık ortalamasına göre yüzde değişim oranını geçmeyecek şekilde yapılacak. Söz konusu yüzde değişim oranının negatif çıkması halinde kira bedelinde bir değişiklik yapılmayacak ",
@@ -165,22 +156,21 @@ class Yapayzeka():
                     "domates fiyatları",
                     " Bir dizi ziyaret için Düzce'ye gelen Enerji ve Tabii Kaynaklar Bakanı Fatih Dönmez, Vali Zülkif Dağlı ile görüştü. Daha sonra Belediye Başkanı Dursun Ay'ı ziyaret eden Dönmez, çıkışta gazetecilere yaptığı açıklamada, Bakanlık bünyesinde geliştirdikleri borlu gübre için mart ayında pilot üretime geçeceklerini söyledi. Eti Maden'deki Ar-Ge biriminde çalışan mühendislerin uzunca bir süredir borlu gübre üzerinde çalışma yaptığını aktaran Dönmez, şöyle devam etti:O çalışmaların artık netice alma aşamasına geldik. Zaten Cumhurbaşkanlığımızın ikinci 100 günlük programında hedeflerimiz arasında yer almaktaydı. İnşallah mart ayı içerisinde belki ilk pilot üretimleri gerçekleştirmiş olacağız. Bu, toprağın yapısına göre, ürünün çeşidine göre ve yağış alma durumuna göre değişecek şekilde 3 farklı borlu gübre geliştirmiş olduk. Eti Maden, Sabancı Üniversitesi iş birliğiyle bunu yaptık. Sadece Türkiye'de değil, yurt dışında da ciddi bir pazar potansiyelimiz var. Bildiğiniz gibi biz borda dünyadaki rezervlerin yaklaşık yüzde 73'üne sahibiz. Dünyadaki bor satış pazarının da yüzde 59'u bizde",
                     " Ozan Arif, Giresun'un Alucra ilçesine bağlı şimdiki ismi ile Yükselen eski adı ile Hapu köyünde 1949'da doğdu.Babasının memuriyeti dolayısıyla, ilk ve ortaokulu Samsun`da bitirdi. 1970'de başladığı öğretmenlik mesleğinde Samsun'un Devgeriş köyünde beş yıl öğretmenlik, dört yıl ise okul müdürlüğü görevi olmak üzere üzere dokuz yıl hizmet verdi. 24 Eylül 1980 ve 5 Kasım 1991 tarihleri arasında Almanya'da yaşadı.Güzel sanatlara yeteneği, şiire ilgisi ve özellikle şairliğe olan kabiliyetinden dolayı okul çağlarında şiir ve resim dallarında birincilikler ve ödüller almaya başlayan Ozan Arif`in başarıları hayatının ileriki yıllarında yöresel sınırları aşıp Türkiye genelinde de devam etti.Birçok şiir ve Halk Edebiyatı yarışmalarında üstün başarı gösteren Ozan Arif`in Türk Halk Edebiyatı`nın şiir, atışma, muamma, irticalen şiir söyleme, lebdeğmez (dudakdeğmez), güzelleme ve diğer dallarında çeşitli tarihlerde aldığı Türkiye birincilikleri, sertifikalar ve ödüller vardır.",
-                     ]
+                    ]
         docs_new2 = ["beslenme c vitamininin önemir", ]
         DATA_PATH = pkg_resources.resource_filename(__name__, 'modeller/')
         # ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
         # pat=Path(ROOT_DIR)
         # pat2=pat.joinpath("modeller")
         # modelpath=pat2.joinpath("svchash3.pkl")
-        files =os.listdir(DATA_PATH)
-        modelpath=Path(DATA_PATH).joinpath("svchash3.pkl")
-        model="svchash3.pkl"
-        if len(docs_new3)!=0:
+        files = os.listdir(DATA_PATH)
+        modelpath = Path(DATA_PATH).joinpath("svchash3.pkl")
+        model = "svchash3.pkl"
+        if len(docs_new3) != 0:
             if model in files:
 
-
                 timestart = timeit.default_timer()
-                loaded_model = joblib.load(modelpath,"r")
+                loaded_model = joblib.load(modelpath, "r")
                 # predicted3 = loaded_model.predict(docs_new)
                 #
                 # for i in enumerate(zip(predicted3, docs_new), 1):
@@ -239,7 +229,7 @@ class Yapayzeka():
                 print("tahmin:  ", i)
             timeend = time.time()
             print("Tahmin skoru : %", 100 * accuracy_score(y_test, predicted2), " doğruluk oranına ulaşılmıştır.")
-            print("geçen süre:  ", timeit.default_timer() - timestart,"  saniye.")
+            print("geçen süre:  ", timeit.default_timer() - timestart, "  saniye.")
         # plt.xlabel('tahminler')
         # plt.ylabel('etiketler')
         # plt.title('Tahmin ortalaması')
@@ -260,8 +250,9 @@ class Yapayzeka():
 
 if __name__ == "__main__":
     from otomasyondb import Veritabani
+
     orn = Yapayzeka()
-    docs_new2 = ["beslenme c vitamininin önemir",]
+    docs_new2 = ["beslenme c vitamininin önemir", ]
 
     orn.predict_from_model(*docs_new2)
 
