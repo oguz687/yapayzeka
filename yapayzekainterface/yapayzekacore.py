@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 import time
 import timeit
@@ -14,9 +15,7 @@ from sklearn import svm
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-with warnings.catch_warnings(record=True) as w:
-    warnings.simplefilter("always")
-    from sklearn.feature_extraction.text import HashingVectorizer
+
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -137,9 +136,10 @@ class Yapayzeka():
     def start_model(self):
         Parallel(n_jobs=3, verbose=1)(delayed(self.test_model()))
 
-    def predict_from_model(self, args):
-        docs_new3 = [args]
-        # docs_new3.append(args)
+    def predict_from_model(self, *args):
+        docs_new3 = []
+        for i in args:
+            docs_new3.append(i)
         docs_new = ['beslenme c vitamininin önemi', 'tarım ve köy işleri başkanlığı altın faiz',
                     "Münbiç şehir merkezinde bugün (16 Ocak) vuku bulan bombalı saldırıda ABD askeri personeli ve sivil can kaybı meydana geldiği üzüntüyle öğrenilmiştir. Bu menfur terör eylemini şiddetle kınıyoruz. ",
                     "Hazine ve Maliye Bakanı Berat Albayrak'ın imzasıyla yayımlanan genelge ile kamu idarelerinin kiraladığı taşınmazlarının kira artış oranlarının belirlenmesinde ve yeni yapacağı taşınmaz kiralamalarında uyacağı esaslar yer aldı. Genelgeye göre; kamu idarelerinin kiraladığı taşınmazların kira artışları, artışın yapılacağı ayda yayımlanan Tüketici Fiyatları Endeksi'nin(TÜFE) 12 aylık ortalamasına göre yüzde değişim oranını geçmeyecek şekilde yapılacak. Söz konusu yüzde değişim oranının negatif çıkması halinde kira bedelinde bir değişiklik yapılmayacak ",
@@ -168,7 +168,6 @@ class Yapayzeka():
         model = "svchash3.pkl"
         if len(docs_new3) != 0:
             if model in files:
-
                 timestart = timeit.default_timer()
                 loaded_model = joblib.load(modelpath, "r")
                 # predicted3 = loaded_model.predict(docs_new)
@@ -181,10 +180,8 @@ class Yapayzeka():
                 # ttf2=pd.DataFrame(ttf)
                 # print(ttf2)
                 # return ttf2
-
                 predicted3 = loaded_model.predict(list(docs_new3))
                 tff = pd.DataFrame(predicted3)
-                print(tff)
                 return tff
             else:
                 print("{0} öğrenim modeli bilinmiyor.eğitim başlatıldı...".format(model))
@@ -250,11 +247,18 @@ class Yapayzeka():
 
 if __name__ == "__main__":
     from otomasyondb import Veritabani
-
+    print("main çalışıyor")
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("ignore")
+        from sklearn.feature_extraction.text import HashingVectorizer
     orn = Yapayzeka()
-    docs_new2 = ["beslenme c vitamininin önemir", ]
+    docs_new2 = ["beslenme c vitamininin önemir","yaşam","bilgisayar" ]
 
-    orn.predict_from_model(*docs_new2)
+    print(orn.predict_from_model(*docs_new2))
 
 else:
     from .otomasyondb import Veritabani
+    print("bu main değil")
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("ignore")
+        from sklearn.feature_extraction.text import HashingVectorizer

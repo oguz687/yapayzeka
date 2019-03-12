@@ -8,7 +8,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="yapayzeka",
-    version="0.0.14",
+    version="0.0.17",
     author="oguzhan",
     author_email="oguzhan_687@hotmail.com",
     description="makine öğrenimi denemesi",
