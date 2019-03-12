@@ -8,13 +8,13 @@ with open('requirements.txt') as f:
 
 setup(
     name="yapayzeka",
-    version="0.0.17",
+    version="0.0.20",
     author="oguzhan",
     author_email="oguzhan_687@hotmail.com",
     description="makine öğrenimi denemesi",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/oguz687/netinterface",
+    url="https://github.com/oguz687/yapayzeka",
     license="MIT",
     packages=["yapayzekainterface"],
     package_dir={"yapayzekainterface": "yapayzekainterface/"},

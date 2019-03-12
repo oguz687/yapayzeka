@@ -252,13 +252,13 @@ if __name__ == "__main__":
         warnings.simplefilter("ignore")
         from sklearn.feature_extraction.text import HashingVectorizer
     orn = Yapayzeka()
-    docs_new2 = ["beslenme c vitamininin önemir","yaşam","bilgisayar" ]
+    docs_new2 = ["beslenme c vitamininin önemir","yaşam","bilgisayar","kitap" ]
 
     print(orn.predict_from_model(*docs_new2))
 
 else:
     from .otomasyondb import Veritabani
-    print("bu main değil")
+
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("ignore")
         from sklearn.feature_extraction.text import HashingVectorizer
